@@ -4,11 +4,19 @@
   "description": "A node restful shop api",
   "main": "index.js",
   "scripts": {
+    "start": "babel-node src/server.js",
+    "build": "babel src --out-dir dist",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "Sérgio Carvalho",
   "license": "ISC",
   "dependencies": {
     "express": "^4.16.4"
+  },
+  "devDependencies": {
+    "@babel/cli": "^7.2.3",
+    "@babel/core": "^7.2.2",
+    "@babel/node": "^7.2.2",
+    "@babel/preset-env": "^7.2.3"
   }
 }
