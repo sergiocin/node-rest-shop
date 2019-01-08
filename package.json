@@ -4,8 +4,10 @@
   "description": "A node restful shop api",
   "main": "index.js",
   "scripts": {
-    "start": "babel-node src/server.js",
     "build": "babel src --out-dir dist",
+    "dev": "npm run eslint && npm run start",
+    "eslint": "eslint '**/*.js'",
+    "start": "babel-node src/server.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "Sérgio Carvalho",
@@ -17,6 +19,12 @@
     "@babel/cli": "^7.2.3",
     "@babel/core": "^7.2.2",
     "@babel/node": "^7.2.2",
-    "@babel/preset-env": "^7.2.3"
+    "@babel/preset-env": "^7.2.3",
+    "eslint": "^5.12.0",
+    "eslint-config-standard": "^12.0.0",
+    "eslint-plugin-import": "^2.14.0",
+    "eslint-plugin-node": "^8.0.1",
+    "eslint-plugin-promise": "^4.0.1",
+    "eslint-plugin-standard": "^4.0.0"
   }
 }
