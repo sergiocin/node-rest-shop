@@ -1,10 +1,9 @@
 import express from 'express'
+
+import productsRoutes from './routes/products'
+
 const app = express()
 
-app.use((req, res, next) => {
-  res.status(200).json({
-    message: 'Server running'
-  })
-})
+app.use('/products', productsRoutes)
 
 module.exports = app
