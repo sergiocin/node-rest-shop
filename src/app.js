@@ -1,11 +1,9 @@
 import express from 'express'
 
-import productsRoutes from './routes/products'
-import ordersRoutes from './routes/orders'
+import routes from './routes/index'
 
 const app = express()
 
-app.use('/products', productsRoutes)
-app.use('/orders', ordersRoutes)
+app.use('/', routes)
 
 module.exports = app
