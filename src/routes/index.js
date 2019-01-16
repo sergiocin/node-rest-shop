@@ -8,4 +8,4 @@ const router = express.Router()
 router.use('/orders', orders)
 router.use('/products', products)
 
-module.exports = router
+export default router
