@@ -9,8 +9,10 @@ router.get('/', (req, res) => {
 })
 
 router.post('/', (req, res) => {
+  const { productId, quantity } = req.body
   res.status(201).json({
-    route: 'POST - /orders'
+    route: 'POST - /orders',
+    order: { productId, quantity }
   })
 })
 
