@@ -77,9 +77,21 @@ router.get('/:id', (req, res) => {
 })
 
 router.patch('/:id', (req, res) => {
-  const { id } = req.params
+  const { body, params: { id } } = req
+  Product.update({ _id: id }, { $set: body })
+    .exec()
+    .then(result => {
+      console.log('Result: ', result)
   res.status(200).json({
-    route: `PATCH - /products/${id}`
+        route: `PATCH - /products/${id}`,
+        message: 'Updated with successfully'
+      })
+    })
+    .catch(error => {
+      res.status(200).json({
+        route: `PATCH - /products/${id}`,
+        error
+      })
   })
 })
 
