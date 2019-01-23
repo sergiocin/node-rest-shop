@@ -56,10 +56,17 @@ router.get('/:id', (req, res) => {
   Product.findById(id)
     .exec()
     .then(result => {
+      if (result) {
       res.status(200).json({
         route: `GET - /products/${id}`,
         product: result
       })
+      } else {
+        res.status(404).json({
+          route: `GET - /products/${id}`,
+          message: 'I can not find your request'
+    })
+      }
     })
     .catch(error => {
       res.status(500).json({
