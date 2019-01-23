@@ -30,7 +30,7 @@ app.use('/', routes)
 // Handling errors
 app.use((error, req, res, next) => {
   res.status(error.status || 500)
-  res.json({ error: { message: error.message }})
+  res.json({ error: { message: error.message } })
 })
 
 export default app

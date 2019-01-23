@@ -1,5 +1,5 @@
 import { Router } from 'express'
-import mongoose, { mongo } from 'mongoose'
+import mongoose from 'mongoose'
 
 import Product from './../models/product'
 
