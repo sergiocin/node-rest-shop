@@ -19,12 +19,18 @@ router.post('/', (req, res) => {
     price
   })
   product.save()
-    .then(result => console.log('result: ', result))
-    .catch(error => console.log('error: ', error))
-  res.status(201).json({
-    route: 'POST - /products',
-    productCreated: { name, price }
-  })
+    .then(result => {
+      res.status(201).json({
+        route: 'POST - /products',
+        productCreated: result
+      })
+    })
+    .catch(error => {
+      res.status(500).json({
+        route: 'POST - /products',
+        error
+      })
+    })
 })
 
 router.get('/:id', (req, res) => {
@@ -32,14 +38,12 @@ router.get('/:id', (req, res) => {
   Product.findById(id)
     .exec()
     .then(result => {
-      console.log('Result: ', result)
       res.status(200).json({
         route: `GET - /products/${id}`,
         product: result
       })
     })
     .catch(error => {
-      console.log('Error: ', error)
       res.status(500).json({
         route: `GET - /products/${id}`,
         error
