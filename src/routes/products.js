@@ -6,9 +6,27 @@ import Product from './../models/product'
 const router = Router()
 
 router.get('/', (req, res) => {
+  Product.find()
+    .exec()
+    .then(result => {
+      if (result.length) {
   res.status(200).json({
-    route: 'GET - /products'
+          route: 'GET - /products',
+          products: result
   })
+      } else {
+        res.status(404).json({
+          route: 'GET - /products',
+          message: 'I can not find your request'
+})
+      }
+    })
+    .catch(error => {
+      res.status(500).json({
+        route: 'GET - /products',
+        error
+      })
+    })
 })
 
 router.post('/', (req, res) => {
