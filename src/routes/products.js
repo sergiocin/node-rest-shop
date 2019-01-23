@@ -1,4 +1,7 @@
 import { Router } from 'express'
+import mongoose, { mongo } from 'mongoose'
+
+import Product from './../models/product'
 
 const router = Router()
 
@@ -10,6 +13,14 @@ router.get('/', (req, res) => {
 
 router.post('/', (req, res) => {
   const { name, price } = req.body
+  const product = new Product({
+    _id: new mongoose.Types.ObjectId(),
+    name,
+    price
+  })
+  product.save()
+    .then(result => console.log('result: ', result))
+    .catch(error => console.log('error: ', error))
   res.status(201).json({
     route: 'POST - /products',
     productCreated: { name, price }

@@ -1,10 +1,15 @@
 import bodyParser from 'body-parser'
+import dotenv from 'dotenv'
 import express from 'express'
 import morgan from 'morgan'
+import mongoose from 'mongoose'
 
 import routes from './routes/index'
 
+dotenv.config()
+
 const app = express()
+mongoose.connect(process.env.MONGO_URL, { useNewUrlParser: true })
 
 app.use(bodyParser.urlencoded({ extended: false }))
 app.use(bodyParser.json())
