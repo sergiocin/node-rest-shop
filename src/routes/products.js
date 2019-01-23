@@ -10,15 +10,15 @@ router.get('/', (req, res) => {
     .exec()
     .then(result => {
       if (result.length) {
-  res.status(200).json({
+        res.status(200).json({
           route: 'GET - /products',
           products: result
-  })
+        })
       } else {
         res.status(404).json({
           route: 'GET - /products',
           message: 'I can not find your request'
-})
+        })
       }
     })
     .catch(error => {
@@ -57,15 +57,15 @@ router.get('/:id', (req, res) => {
     .exec()
     .then(result => {
       if (result) {
-      res.status(200).json({
-        route: `GET - /products/${id}`,
-        product: result
-      })
+        res.status(200).json({
+          route: `GET - /products/${id}`,
+          product: result
+        })
       } else {
         res.status(404).json({
           route: `GET - /products/${id}`,
           message: 'I can not find your request'
-    })
+        })
       }
     })
     .catch(error => {
@@ -82,7 +82,7 @@ router.patch('/:id', (req, res) => {
     .exec()
     .then(result => {
       console.log('Result: ', result)
-  res.status(200).json({
+      res.status(200).json({
         route: `PATCH - /products/${id}`,
         message: 'Updated with successfully'
       })
@@ -92,7 +92,7 @@ router.patch('/:id', (req, res) => {
         route: `PATCH - /products/${id}`,
         error
       })
-  })
+    })
 })
 
 router.delete('/:id', (req, res) => {
@@ -101,7 +101,7 @@ router.delete('/:id', (req, res) => {
     .exec()
     .then(result => {
       console.log('Result: ', result)
-  res.status(200).json({
+      res.status(200).json({
         route: `DELETE - /products/${id}`,
         message: 'Removed with successfully'
       })
@@ -111,7 +111,7 @@ router.delete('/:id', (req, res) => {
         route: `DELETE - /products/${id}`,
         error
       })
-  })
+    })
 })
 
 export default router
