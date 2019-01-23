@@ -97,8 +97,20 @@ router.patch('/:id', (req, res) => {
 
 router.delete('/:id', (req, res) => {
   const { id } = req.params
+  Product.remove({ _id: id })
+    .exec()
+    .then(result => {
+      console.log('Result: ', result)
   res.status(200).json({
-    route: `DELETE - /products/${id}`
+        route: `DELETE - /products/${id}`,
+        message: 'Removed with successfully'
+      })
+    })
+    .catch(error => {
+      res.status(500).json({
+        route: `DELETE - /products/${id}`,
+        error
+      })
   })
 })
 
