@@ -29,9 +29,22 @@ router.post('/', (req, res) => {
 
 router.get('/:id', (req, res) => {
   const { id } = req.params
-  res.status(200).json({
-    route: `GET - /products/${id}`
-  })
+  Product.findById(id)
+    .exec()
+    .then(result => {
+      console.log('Result: ', result)
+      res.status(200).json({
+        route: `GET - /products/${id}`,
+        product: result
+      })
+    })
+    .catch(error => {
+      console.log('Error: ', error)
+      res.status(500).json({
+        route: `GET - /products/${id}`,
+        error
+      })
+    })
 })
 
 router.patch('/:id', (req, res) => {
