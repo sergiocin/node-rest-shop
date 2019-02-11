@@ -1,4 +1,7 @@
 import { Router } from 'express'
+import mongoose from 'mongoose'
+
+import Order from './../models/orders'
 
 const router = Router()
 
@@ -9,11 +12,32 @@ router.get('/', (req, res) => {
 })
 
 router.post('/', (req, res) => {
-  const { productId, quantity } = req.body
-  res.status(201).json({
-    route: 'POST - /orders',
-    order: { productId, quantity }
+  const order = new Order({
+    _id: mongoose.Types.ObjectId(),
+    quantity: req.body.quantity,
+    product: req.body.product
   })
+  order.save()
+    .then(result => {
+      res.status(201).json({
+        route: 'POST - /orders',
+        createdOrder: {
+          _id: result._id,
+          quantity: result.quantity,
+          product: result.product,
+          request: {
+            method: 'GET',
+            url: `http://localhost:3000/orders/${result._id}`
+          }
+        }
+      })
+    })
+    .catch(error => {
+      res.status(500).json({
+        route: 'POST - /orders',
+        error
+      })
+    })
 })
 
 router.get('/:id', (req, res) => {
