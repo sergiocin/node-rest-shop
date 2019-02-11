@@ -5,14 +5,26 @@ import Product from './../models/product'
 
 const router = Router()
 
+function format (products) {
+  return products.map(product => ({
+    ...JSON.parse(JSON.stringify(product)),
+    request: {
+      method: 'GET',
+      url: `http://localhost:3000/products/${product._id}`
+    }
+  }))
+}
+
 router.get('/', (req, res) => {
   Product.find()
+    .select('_id name price')
     .exec()
     .then(result => {
       if (result.length) {
         res.status(200).json({
           route: 'GET - /products',
-          products: result
+          count: result.length,
+          products: format(result)
         })
       } else {
         res.status(404).json({
