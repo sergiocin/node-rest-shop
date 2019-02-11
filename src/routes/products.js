@@ -95,8 +95,7 @@ router.patch('/:id', (req, res) => {
   const { body, params: { id } } = req
   Product.updateOne({ _id: id }, { $set: body })
     .exec()
-    .then(result => {
-      console.log('Result: ', result)
+    .then(() => {
       res.status(200).json({
         route: `PATCH - /products/${id}`,
         message: 'Updated with successfully'
@@ -114,8 +113,7 @@ router.delete('/:id', (req, res) => {
   const { id } = req.params
   Product.deleteOne({ _id: id })
     .exec()
-    .then(result => {
-      console.log('Result: ', result)
+    .then(() => {
       res.status(200).json({
         route: `DELETE - /products/${id}`,
         message: 'Removed with successfully'
