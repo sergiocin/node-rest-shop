@@ -5,14 +5,16 @@ import Product from './../models/product'
 
 const router = Router()
 
-function format (products) {
-  return products.map(product => ({
-    ...JSON.parse(JSON.stringify(product)),
+function format (product) {
+  return {
+    _id: product._id,
+    name: product.name,
+    price: product.price,
     request: {
       method: 'GET',
       url: `http://localhost:3000/products/${product._id}`
     }
-  }))
+  }
 }
 
 router.get('/', (req, res) => {
@@ -24,7 +26,7 @@ router.get('/', (req, res) => {
         res.status(200).json({
           route: 'GET - /products',
           count: result.length,
-          products: format(result)
+          products: result.map(format)
         })
       } else {
         res.status(404).json({
@@ -52,7 +54,7 @@ router.post('/', (req, res) => {
     .then(result => {
       res.status(201).json({
         route: 'POST - /products',
-        productCreated: result
+        productCreated: format(result)
       })
     })
     .catch(error => {
