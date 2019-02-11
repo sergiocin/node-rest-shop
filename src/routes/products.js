@@ -54,6 +54,7 @@ router.post('/', (req, res) => {
 router.get('/:id', (req, res) => {
   const { id } = req.params
   Product.findById(id)
+    .select('_id name price')
     .exec()
     .then(result => {
       if (result) {
