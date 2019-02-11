@@ -93,7 +93,7 @@ router.get('/:id', (req, res) => {
 
 router.patch('/:id', (req, res) => {
   const { body, params: { id } } = req
-  Product.update({ _id: id }, { $set: body })
+  Product.updateOne({ _id: id }, { $set: body })
     .exec()
     .then(result => {
       console.log('Result: ', result)
@@ -112,7 +112,7 @@ router.patch('/:id', (req, res) => {
 
 router.delete('/:id', (req, res) => {
   const { id } = req.params
-  Product.remove({ _id: id })
+  Product.deleteOne({ _id: id })
     .exec()
     .then(result => {
       console.log('Result: ', result)
