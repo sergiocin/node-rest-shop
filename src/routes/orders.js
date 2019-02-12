@@ -5,9 +5,35 @@ import Order from './../models/orders'
 
 const router = Router()
 
-router.get('/', (req, res) => {
-  res.status(200).json({
-    route: 'GET - /orders'
+function format (order) {
+  return {
+    _id: order._id,
+    quantity: order.quantity,
+    product: order.product
+  }
+}
+
+router.get('/', async (req, res) => {
+  const route = 'GET - /orders'
+
+  const result = await Order.find()
+    .catch((error) => {
+      return res.status(500).json({
+        route,
+        error
+      })
+    })
+
+  if (result.length) {
+    return res.status(200).json({
+      route,
+      count: result.length,
+      orders: result.map(format)
+    })
+  }
+  return res.status(404).json({
+    route,
+    message: 'I can not find your request'
   })
 })
 
