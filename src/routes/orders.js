@@ -3,6 +3,8 @@ import mongoose from 'mongoose'
 
 import Order from './../models/orders'
 
+const NOT_FOUND_MESSAGE = 'Resource not found'
+
 const router = Router()
 
 function format (order) {
@@ -85,10 +87,22 @@ router.get('/:id', async (req, res) => {
   })
 })
 
-router.delete('/:id', (req, res) => {
-  const { id } = req.params
-  res.status(200).json({
-    route: `DELETE - /orders/${id}`
+router.delete('/:id', async (req, res) => {
+  const route = `DELETE - /orders/${req.params.id}`
+
+  const result = await Order.deleteOne({ _id: req.params.id })
+    .catch((error) => res.status(500).json({ route, error }))
+
+  if (result.n > 0) {
+    return res.status(200).json({
+      route,
+      message: 'Deleted with successfully'
+    })
+  }
+
+  return res.status(404).json({
+    route,
+    message: NOT_FOUND_MESSAGE
   })
 })
 
