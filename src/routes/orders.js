@@ -19,12 +19,7 @@ router.get('/', async (req, res) => {
   const route = 'GET - /orders'
 
   const result = await Order.find()
-    .catch((error) => {
-      return res.status(500).json({
-        route,
-        error
-      })
-    })
+    .catch((error) => res.status(500).json({ route, error }))
 
   if (result.length) {
     return res.status(200).json({
@@ -33,9 +28,10 @@ router.get('/', async (req, res) => {
       orders: result.map(format)
     })
   }
+
   return res.status(404).json({
     route,
-    message: 'I can not find your request'
+    message: NOT_FOUND_MESSAGE
   })
 })
 
