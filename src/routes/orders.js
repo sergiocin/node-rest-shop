@@ -66,10 +66,22 @@ router.post('/', (req, res) => {
     })
 })
 
-router.get('/:id', (req, res) => {
-  const { id } = req.params
-  res.status(200).json({
-    route: `GET - /orders/${id}`
+router.get('/:id', async (req, res) => {
+  const route = `GET - /orders/${req.params.id}`
+
+  const result = await Order.findById(req.params.id)
+    .catch((error) => res.status(500).json({ route, error }))
+
+  if (result) {
+    return res.status(200).json({
+      route,
+      order: format(result)
+    })
+  }
+
+  return res.status(404).json({
+    route,
+    message: 'Resource not found'
   })
 })
 
