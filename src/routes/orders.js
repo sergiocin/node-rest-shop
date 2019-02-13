@@ -35,33 +35,24 @@ router.get('/', async (req, res) => {
   })
 })
 
-router.post('/', (req, res) => {
+router.post('/', async (req, res) => {
+  const route = 'POST - /orders'
+
   const order = new Order({
     _id: mongoose.Types.ObjectId(),
     quantity: req.body.quantity,
     product: req.body.product
   })
-  order.save()
-    .then(result => {
-      res.status(201).json({
-        route: 'POST - /orders',
-        createdOrder: {
-          _id: result._id,
-          quantity: result.quantity,
-          product: result.product,
-          request: {
-            method: 'GET',
-            url: `http://localhost:3000/orders/${result._id}`
-          }
-        }
-      })
+
+  const result = await order.save()
+    .catch((error) => res.status(500).json({ route, error }))
+
+  if (result) {
+    return res.status(201).json({
+      route,
+      createdOrder: format(result)
     })
-    .catch(error => {
-      res.status(500).json({
-        route: 'POST - /orders',
-        error
-      })
-    })
+  }
 })
 
 router.get('/:id', async (req, res) => {
