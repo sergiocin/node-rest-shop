@@ -70,7 +70,7 @@ router.get('/:id', async (req, res) => {
 
   return res.status(404).json({
     route,
-    message: 'Resource not found'
+    message: NOT_FOUND_MESSAGE
   })
 })
 
