@@ -5,7 +5,8 @@ const schema = mongoose.Schema({
   quantity: { type: Number, required: true },
   product: {
     type: mongoose.Types.ObjectId,
-    ref: 'Product'
+    ref: 'Product',
+    required: true
   }
 })
 const Order = mongoose.model('Order', schema)
