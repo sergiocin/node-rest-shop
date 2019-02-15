@@ -1,6 +1,9 @@
 import { Router } from 'express'
 import mongoose from 'mongoose'
 
+import ValidationError from './../errors/ValidationError'
+
+import Product from './../models/product'
 import Order from './../models/orders'
 
 const NOT_FOUND_MESSAGE = 'Resource not found'
@@ -44,14 +47,25 @@ router.post('/', async (req, res) => {
     product: req.body.product
   })
 
-  const result = await order.save()
-    .catch((error) => res.status(500).json({ route, error }))
+  try {
+    const validationError = order.validateSync()
+    if (validationError) throw new ValidationError(validationError.message)
 
-  if (result) {
-    return res.status(201).json({
-      route,
-      createdOrder: format(result)
-    })
+    const product = await Product.findById(req.body.product)
+    if (!product) throw new ValidationError('Invalid Product')
+
+    const result = await order.save()
+    if (result) {
+      return res.status(201).json({
+        route,
+        createdOrder: format(result)
+      })
+    }
+  } catch (error) {
+    if (error.name === 'ValidationError') {
+      return res.status(error.code).json({ route, error: error.message })
+    }
+    return res.status(500).json({ route, error: error.message })
   }
 })
 
