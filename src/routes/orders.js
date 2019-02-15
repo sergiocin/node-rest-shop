@@ -10,25 +10,17 @@ const NOT_FOUND_MESSAGE = 'Resource not found'
 
 const router = Router()
 
-function format (order) {
-  return {
-    _id: order._id,
-    quantity: order.quantity,
-    product: order.product
-  }
-}
-
 router.get('/', async (req, res) => {
   const route = 'GET - /orders'
 
-  const result = await Order.find()
+  const result = await Order.find().populate('product')
     .catch((error) => res.status(500).json({ route, error }))
 
   if (result.length) {
     return res.status(200).json({
       route,
       count: result.length,
-      orders: result.map(format)
+      orders: result.map(Order.format)
     })
   }
 
@@ -58,7 +50,7 @@ router.post('/', async (req, res) => {
     if (result) {
       return res.status(201).json({
         route,
-        createdOrder: format(result)
+        createdOrder: Order.format(result)
       })
     }
   } catch (error) {
@@ -72,13 +64,13 @@ router.post('/', async (req, res) => {
 router.get('/:id', async (req, res) => {
   const route = `GET - /orders/${req.params.id}`
 
-  const result = await Order.findById(req.params.id)
+  const result = await Order.findById(req.params.id).populate('product')
     .catch((error) => res.status(500).json({ route, error }))
 
   if (result) {
     return res.status(200).json({
       route,
-      order: format(result)
+      order: Order.format(result)
     })
   }
 
