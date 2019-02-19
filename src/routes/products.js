@@ -1,8 +1,18 @@
 import { Router } from 'express'
 import mongoose from 'mongoose'
+import multer from 'multer'
 
 import Product from './../models/product'
 
+const storage = multer.diskStorage({
+  destination: (req, file, cb) => {
+    cb(null, 'uploads')
+  },
+  filename: (req, file, cb) => {
+    cb(null, `${Date.now()}_${file.originalname}`)
+  }
+})
+const upload = multer({ storage })
 const router = Router()
 
 function format (product) {
@@ -10,6 +20,7 @@ function format (product) {
     _id: product._id,
     name: product.name,
     price: product.price,
+    picture: product.picture,
     request: {
       method: 'GET',
       url: `http://localhost:3000/products/${product._id}`
@@ -43,12 +54,13 @@ router.get('/', (req, res) => {
     })
 })
 
-router.post('/', (req, res) => {
+router.post('/', upload.single('picture'), (req, res) => {
   const { name, price } = req.body
   const product = new Product({
     _id: new mongoose.Types.ObjectId(),
     name,
-    price
+    price,
+    picture: req.file.path
   })
   product.save()
     .then(result => {
