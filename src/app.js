@@ -25,6 +25,7 @@ app.use((req, res, next) => {
   next()
 })
 
+app.use('/uploads', express.static('uploads'))
 app.use('/', routes)
 
 // Handling errors
