@@ -36,4 +36,16 @@ router.post('/signup', async (req, res) => {
   }
 })
 
+router.delete('/:id', async (req, res) => {
+  const result = await User.deleteOne({ _id: req.params.id })
+  if (result.n > 0) {
+    return res.status(200).json({
+      message: 'user deleted'
+    })
+  }
+  return res.status(404).json({
+    error: 'user not found'
+  })
+})
+
 export default router
