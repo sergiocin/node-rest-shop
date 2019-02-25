@@ -7,6 +7,12 @@ import User from './../models/user'
 const router = Router()
 
 router.post('/signup', async (req, res) => {
+  const user = await User.findOne({ email: req.body.email })
+  if (user) {
+    return res.status(409).json({
+      error: 'email already used'
+    })
+  }
   try {
     const hash = bcrypt.hashSync(req.body.password, 10)
 
