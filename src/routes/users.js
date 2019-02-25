@@ -1,7 +1,10 @@
 import { Router } from 'express'
 import mongoose from 'mongoose'
 import bcrypt from 'bcrypt'
+import jwt from 'jsonwebtoken'
+// import dotenv from 'dotenv'
 
+// dotenv.config()
 import User from './../models/user'
 
 const router = Router()
@@ -46,8 +49,18 @@ router.post('/login', async (req, res) => {
 
   const match = bcrypt.compareSync(req.body.password, user.password)
   if (match) {
+    const token = jwt.sign(
+      {
+        email: req.body.email,
+        id: user._id
+      },
+      process.env.JWT_KEY,
+      { expiresIn: '1h' }
+    )
+
     return res.status(404).json({
-      message: 'logged'
+      message: 'Success Authentication',
+      token
     })
   }
   return res.status(401).json({
