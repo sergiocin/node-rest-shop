@@ -36,6 +36,25 @@ router.post('/signup', async (req, res) => {
   }
 })
 
+router.post('/login', async (req, res) => {
+  const user = await User.findOne({ email: req.body.email })
+  if (!user) {
+    return res.status(404).json({
+      message: 'user not found'
+    })
+  }
+
+  const match = bcrypt.compareSync(req.body.password, user.password)
+  if (match) {
+    return res.status(404).json({
+      message: 'logged'
+    })
+  }
+  return res.status(401).json({
+    error: 'password or email does not match'
+  })
+})
+
 router.delete('/:id', async (req, res) => {
   const result = await User.deleteOne({ _id: req.params.id })
   if (result.n > 0) {
