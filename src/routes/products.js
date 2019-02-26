@@ -1,6 +1,7 @@
 import { Router } from 'express'
 import mongoose from 'mongoose'
 import multer from 'multer'
+import checkAuth from './../middleware/check-auth'
 
 import Product from './../models/product'
 
@@ -28,7 +29,7 @@ function format (product) {
   }
 }
 
-router.get('/', (req, res) => {
+router.get('/', checkAuth, (req, res) => {
   Product.find()
     .select('_id name price')
     .exec()
