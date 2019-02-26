@@ -2,9 +2,7 @@ import { Router } from 'express'
 import mongoose from 'mongoose'
 import bcrypt from 'bcrypt'
 import jwt from 'jsonwebtoken'
-// import dotenv from 'dotenv'
 
-// dotenv.config()
 import User from './../models/user'
 
 const router = Router()
