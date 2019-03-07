@@ -29,7 +29,7 @@ function format (product) {
   }
 }
 
-router.get('/', checkAuth, (req, res) => {
+router.get('/', (req, res) => {
   Product.find()
     .select('_id name price')
     .exec()
@@ -55,7 +55,7 @@ router.get('/', checkAuth, (req, res) => {
     })
 })
 
-router.post('/', upload.single('picture'), (req, res) => {
+router.post('/', checkAuth, upload.single('picture'), (req, res) => {
   const { name, price } = req.body
   const product = new Product({
     _id: new mongoose.Types.ObjectId(),
