@@ -1,5 +1,7 @@
 import { Router } from 'express'
 import mongoose from 'mongoose'
+import validatorSchema from './../middleware/validator'
+import orderSchema from './../schemas/order'
 
 import ValidationError from './../errors/ValidationError'
 
@@ -30,7 +32,7 @@ router.get('/', async (req, res) => {
   })
 })
 
-router.post('/', async (req, res) => {
+router.post('/', orderSchema, validatorSchema, async (req, res) => {
   const route = 'POST - /orders'
 
   const order = new Order({
