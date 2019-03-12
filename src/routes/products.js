@@ -2,6 +2,8 @@ import { Router } from 'express'
 import mongoose from 'mongoose'
 import multer from 'multer'
 import checkAuth from './../middleware/check-auth'
+import validatorSchema from './../middleware/validator'
+import productSchema from './../schemas/product'
 
 import Product from './../models/product'
 
@@ -55,7 +57,7 @@ router.get('/', (req, res) => {
     })
 })
 
-router.post('/', checkAuth, upload.single('picture'), (req, res) => {
+router.post('/', upload.single('picture'), productSchema, validatorSchema, checkAuth, (req, res) => {
   const { name, price } = req.body
   const product = new Product({
     _id: new mongoose.Types.ObjectId(),

@@ -2,12 +2,14 @@ import { Router } from 'express'
 import mongoose from 'mongoose'
 import bcrypt from 'bcrypt'
 import jwt from 'jsonwebtoken'
+import validatorSchema from './../middleware/validator'
+import userSchema from './../schemas/users'
 
 import User from './../models/user'
 
 const router = Router()
 
-router.post('/signup', async (req, res) => {
+router.post('/signup', userSchema, validatorSchema, async (req, res) => {
   const user = await User.findOne({ email: req.body.email })
   if (user) {
     return res.status(409).json({
@@ -37,7 +39,7 @@ router.post('/signup', async (req, res) => {
   }
 })
 
-router.post('/login', async (req, res) => {
+router.post('/login', userSchema, validatorSchema, async (req, res) => {
   const user = await User.findOne({ email: req.body.email })
   if (!user) {
     return res.status(404).json({
