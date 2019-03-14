@@ -1,83 +1,39 @@
 import { Router } from 'express'
-import mongoose from 'mongoose'
-import bcrypt from 'bcrypt'
-import jwt from 'jsonwebtoken'
 import validatorSchema from './../middleware/validator'
 import userSchema from './../schemas/users'
 
-import User from './../models/user'
+import UserController from './../controllers/User'
 
 const router = Router()
 
 router.post('/signup', userSchema, validatorSchema, async (req, res) => {
-  const user = await User.findOne({ email: req.body.email })
-  if (user) {
-    return res.status(409).json({
-      error: 'email already used'
-    })
-  }
   try {
-    const hash = bcrypt.hashSync(req.body.password, 10)
-
-    const user = new User({
-      _id: new mongoose.Types.ObjectId(),
-      email: req.body.email,
-      password: hash
-    })
-
-    const result = await user.save()
-    if (result) {
-      res.status(201).json({
-        message: 'Okay, we have created the user'
-      })
-    }
+    const user = new UserController({ email: req.body.email, password: req.body.password })
+    await user.signup()
+    return res.status(201).json({ message: 'User Registered' })
   } catch (error) {
-    console.log('Hash Error: ', error)
-    res.status(500).json({
-      error
-    })
+    return res.status(error.code).json({ message: error.message })
   }
 })
 
 router.post('/login', userSchema, validatorSchema, async (req, res) => {
-  const user = await User.findOne({ email: req.body.email })
-  if (!user) {
-    return res.status(404).json({
-      message: 'user not found'
-    })
+  try {
+    const user = new UserController({ email: req.body.email, password: req.body.password })
+    const token = await user.login()
+    return res.status(200).json({ message: 'User Authenticated', token })
+  } catch (error) {
+    return res.status(error.code).json({ message: error.message })
   }
-
-  const match = bcrypt.compareSync(req.body.password, user.password)
-  if (match) {
-    const token = jwt.sign(
-      {
-        email: req.body.email,
-        id: user._id
-      },
-      process.env.JWT_KEY,
-      { expiresIn: '1h' }
-    )
-
-    return res.status(200).json({
-      message: 'Success Authentication',
-      token
-    })
-  }
-  return res.status(401).json({
-    error: 'password or email does not match'
-  })
 })
 
 router.delete('/:id', async (req, res) => {
-  const result = await User.deleteOne({ _id: req.params.id })
-  if (result.n > 0) {
-    return res.status(200).json({
-      message: 'user deleted'
-    })
+  try {
+    const user = new UserController({ _id: req.params.id })
+    const result = await user.delete()
+    if (result) return res.status(200).json({ message: 'User Deleted' })
+  } catch (error) {
+    return res.status(error.code).json({ message: error.message })
   }
-  return res.status(404).json({
-    error: 'user not found'
-  })
 })
 
 export default router
