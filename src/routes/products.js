@@ -1,5 +1,4 @@
 import { Router } from 'express'
-import mongoose from 'mongoose'
 import multer from 'multer'
 import checkAuth from './../middleware/check-auth'
 import validatorSchema from './../middleware/validator'
@@ -50,27 +49,16 @@ router.get('/', async (req, res) => {
   }
 })
 
-router.post('/', upload.single('picture'), productSchema, validatorSchema, checkAuth, (req, res) => {
-  const { name, price } = req.body
-  const product = new Product({
-    _id: new mongoose.Types.ObjectId(),
-    name,
-    price,
-    picture: req.file.path
-  })
-  product.save()
-    .then(result => {
-      res.status(201).json({
-        route: 'POST - /products',
-        productCreated: format(result)
-      })
-    })
-    .catch(error => {
-      res.status(500).json({
-        route: 'POST - /products',
-        error
-      })
-    })
+router.post('/', upload.single('picture'), productSchema, validatorSchema, checkAuth, async (req, res) => {
+  const { body: { name, price }, file: { path } } = req
+  const product = new ProductController({ name, picture: path, price })
+
+  try {
+    await product.create()
+    return res.status(201).json({ message: 'Product Created' })
+  } catch (error) {
+    return res.status(500).json({ message: error.message })
+  }
 })
 
 router.get('/:id', (req, res) => {
