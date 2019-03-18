@@ -1,11 +1,7 @@
 import { Router } from 'express'
-import mongoose from 'mongoose'
 import validatorSchema from './../middleware/validator'
 import orderSchema from './../schemas/order'
 
-import ValidationError from './../errors/ValidationError'
-
-import Product from './../models/product'
 import Order from './../models/orders'
 
 import OrderController from './../controllers/Order'
@@ -25,33 +21,12 @@ router.get('/', async (req, res) => {
 })
 
 router.post('/', orderSchema, validatorSchema, async (req, res) => {
-  const route = 'POST - /orders'
-
-  const order = new Order({
-    _id: mongoose.Types.ObjectId(),
-    quantity: req.body.quantity,
-    product: req.body.product
-  })
-
   try {
-    const validationError = order.validateSync()
-    if (validationError) throw new ValidationError(validationError.message)
-
-    const product = await Product.findById(req.body.product)
-    if (!product) throw new ValidationError('Invalid Product')
-
-    const result = await order.save()
-    if (result) {
-      return res.status(201).json({
-        route,
-        createdOrder: Order.format(result)
-      })
-    }
+    const order = new OrderController(req.body)
+    await order.create()
+    return res.status(201).json({ message: 'Order Created' })
   } catch (error) {
-    if (error.name === 'ValidationError') {
-      return res.status(error.code).json({ route, error: error.message })
-    }
-    return res.status(500).json({ route, error: error.message })
+    return res.status(error.code).json({ message: error.message })
   }
 })
 

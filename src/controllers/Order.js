@@ -1,10 +1,21 @@
 import InternalError from './../errors/InternalError'
+import ValidationError from './../errors/ValidationError'
 import Model from './../models/orders'
+import Product from './../controllers/Product'
+import mongoose from 'mongoose'
 
 class Order {
   constructor (order) {
     this.product = order.product
     this.quantity = order.quantity
+  }
+
+  async create () {
+    const product = await Product.findById(this.product)
+    if (!product) throw new ValidationError('Invalid Product')
+
+    const model = this._setModel()
+    return model.save().catch(error => { throw new InternalError(error.message) })
   }
 
   static async getAll () {
@@ -13,6 +24,14 @@ class Order {
 
     if (orders.length) return orders.map(Model.format)
     return false
+  }
+
+  _setModel () {
+    return new Model({
+      _id: mongoose.Types.ObjectId(),
+      product: this.product,
+      quantity: this.quantity
+    })
   }
 }
 
