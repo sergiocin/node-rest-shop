@@ -28,6 +28,12 @@ class Product {
       .catch(error => { throw new InternalError(error.message) })
   }
 
+  async update (id) {
+    this._setValidData()
+    return Model.updateOne({ _id: id }, { $set: this })
+      .catch(error => { throw new InternalError(error.message) })
+  }
+
   _setModel () {
     return new Model({
       _id: new mongoose.Types.ObjectId(),
@@ -35,6 +41,15 @@ class Product {
       picture: this.picture,
       price: this.price
     })
+  }
+
+  _setValidData () {
+    // remove undefined and null properties
+    for (const property in this) {
+      if (!this[property]) {
+        delete this[property]
+      }
+    }
   }
 }
 

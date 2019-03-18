@@ -74,22 +74,14 @@ router.get('/:id', async (req, res) => {
   }
 })
 
-router.patch('/:id', (req, res) => {
-  const { body, params: { id } } = req
-  Product.updateOne({ _id: id }, { $set: body })
-    .exec()
-    .then(() => {
-      res.status(200).json({
-        route: `PATCH - /products/${id}`,
-        message: 'Updated with successfully'
-      })
-    })
-    .catch(error => {
-      res.status(200).json({
-        route: `PATCH - /products/${id}`,
-        error
-      })
-    })
+router.patch('/:id', async (req, res) => {
+  try {
+    const product = new ProductController(req.body)
+    await product.update(req.params.id)
+    return res.status(200).json({ message: 'Product Updated' })
+  } catch (error) {
+    return res.status(error.code).json({ message: error.message })
+  }
 })
 
 router.delete('/:id', (req, res) => {
