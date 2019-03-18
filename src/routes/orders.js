@@ -8,28 +8,20 @@ import ValidationError from './../errors/ValidationError'
 import Product from './../models/product'
 import Order from './../models/orders'
 
+import OrderController from './../controllers/Order'
+
 const NOT_FOUND_MESSAGE = 'Resource not found'
 
 const router = Router()
 
 router.get('/', async (req, res) => {
-  const route = 'GET - /orders'
-
-  const result = await Order.find().populate('product')
-    .catch((error) => res.status(500).json({ route, error }))
-
-  if (result.length) {
-    return res.status(200).json({
-      route,
-      count: result.length,
-      orders: result.map(Order.format)
-    })
+  try {
+    const orders = await OrderController.getAll()
+    if (orders) return res.status(200).json({ orders })
+    return res.status(404).json({ message: 'Resource not found' })
+  } catch (error) {
+    return res.status(error.code).json({ message: error.message })
   }
-
-  return res.status(404).json({
-    route,
-    message: NOT_FOUND_MESSAGE
-  })
 })
 
 router.post('/', orderSchema, validatorSchema, async (req, res) => {
