@@ -16,6 +16,12 @@ class Product {
       .catch(error => { throw new InternalError(error.message) })
   }
 
+  static findById (id) {
+    return Model.findById(id)
+      .select('_id name picture price')
+      .catch(error => { throw new InternalError(error.message) })
+  }
+
   static getAll () {
     return Model.find()
       .select('_id name picture price')

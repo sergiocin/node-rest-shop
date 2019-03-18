@@ -61,30 +61,17 @@ router.post('/', upload.single('picture'), productSchema, validatorSchema, check
   }
 })
 
-router.get('/:id', (req, res) => {
-  const { id } = req.params
-  Product.findById(id)
-    .select('_id name price')
-    .exec()
-    .then(result => {
-      if (result) {
-        res.status(200).json({
-          route: `GET - /products/${id}`,
-          product: result
-        })
-      } else {
-        res.status(404).json({
-          route: `GET - /products/${id}`,
-          message: 'I can not find your request'
-        })
-      }
-    })
-    .catch(error => {
-      res.status(500).json({
-        route: `GET - /products/${id}`,
-        error
-      })
-    })
+router.get('/:id', async (req, res) => {
+  try {
+    const product = await ProductController.findById(req.params.id)
+    if (product) {
+      return res.status(200).json({ product })
+    } else {
+      return res.status(404).json({ message: 'I can not find your resource' })
+    }
+  } catch (error) {
+    return res.status(error.code).json({ message: error.message })
+  }
 })
 
 router.patch('/:id', (req, res) => {
