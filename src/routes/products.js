@@ -4,7 +4,6 @@ import checkAuth from './../middleware/check-auth'
 import validatorSchema from './../middleware/validator'
 import productSchema from './../schemas/product'
 
-import Product from './../models/product'
 import ProductController from './../controllers/Product'
 
 const storage = multer.diskStorage({
@@ -84,22 +83,14 @@ router.patch('/:id', async (req, res) => {
   }
 })
 
-router.delete('/:id', (req, res) => {
-  const { id } = req.params
-  Product.deleteOne({ _id: id })
-    .exec()
-    .then(() => {
-      res.status(200).json({
-        route: `DELETE - /products/${id}`,
-        message: 'Removed with successfully'
-      })
-    })
-    .catch(error => {
-      res.status(500).json({
-        route: `DELETE - /products/${id}`,
-        error
-      })
-    })
+router.delete('/:id', async (req, res) => {
+  try {
+    const result = await ProductController.delete(req.params.id)
+    if (result) return res.status(200).json({ message: 'Product Deleted' })
+    return res.status(404).json({ message: 'Resource not found' })
+  } catch (error) {
+    return res.status(error.code).json({ message: error.message })
+  }
 })
 
 export default router

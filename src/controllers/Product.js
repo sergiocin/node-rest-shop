@@ -16,6 +16,13 @@ class Product {
       .catch(error => { throw new InternalError(error.message) })
   }
 
+  static async delete (id) {
+    const result = await Model.deleteOne({ _id: id })
+      .catch(error => { throw new InternalError(error.message) })
+    if (result.n > 0) return true
+    return false
+  }
+
   static findById (id) {
     return Model.findById(id)
       .select('_id name picture price')
