@@ -31,22 +31,13 @@ router.post('/', orderSchema, validatorSchema, async (req, res) => {
 })
 
 router.get('/:id', async (req, res) => {
-  const route = `GET - /orders/${req.params.id}`
-
-  const result = await Order.findById(req.params.id).populate('product')
-    .catch((error) => res.status(500).json({ route, error }))
-
-  if (result) {
-    return res.status(200).json({
-      route,
-      order: Order.format(result)
-    })
+  try {
+    const order = await OrderController.findById(req.params.id)
+    if (order) return res.status(200).json({ order })
+    return res.status(404).json({ message: 'Resource not found' })
+  } catch (error) {
+    return res.status(error.code).json({ message: error.message })
   }
-
-  return res.status(404).json({
-    route,
-    message: NOT_FOUND_MESSAGE
-  })
 })
 
 router.delete('/:id', async (req, res) => {
