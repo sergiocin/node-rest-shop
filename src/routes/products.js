@@ -1,11 +1,10 @@
 import { Router } from 'express'
-import mongoose from 'mongoose'
 import multer from 'multer'
 import checkAuth from './../middleware/check-auth'
 import validatorSchema from './../middleware/validator'
 import productSchema from './../schemas/product'
 
-import Product from './../models/product'
+import ProductController from './../controllers/Product'
 
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
@@ -31,115 +30,67 @@ function format (product) {
   }
 }
 
-router.get('/', (req, res) => {
-  Product.find()
-    .select('_id name price')
-    .exec()
-    .then(result => {
-      if (result.length) {
-        res.status(200).json({
-          route: 'GET - /products',
-          count: result.length,
-          products: result.map(format)
-        })
-      } else {
-        res.status(404).json({
-          route: 'GET - /products',
-          message: 'I can not find your request'
-        })
-      }
-    })
-    .catch(error => {
-      res.status(500).json({
-        route: 'GET - /products',
-        error
+router.get('/', async (req, res) => {
+  try {
+    const products = await ProductController.getAll()
+    if (products.length) {
+      return res.status(200).json({
+        count: products.length,
+        data: products.map(format)
       })
-    })
+    } else {
+      return res.status(404).json({
+        message: 'I can not find your resource'
+      })
+    }
+  } catch (error) {
+    return res.status(error.code).json({ message: error.message })
+  }
 })
 
-router.post('/', upload.single('picture'), productSchema, validatorSchema, checkAuth, (req, res) => {
-  const { name, price } = req.body
-  const product = new Product({
-    _id: new mongoose.Types.ObjectId(),
-    name,
-    price,
-    picture: req.file.path
-  })
-  product.save()
-    .then(result => {
-      res.status(201).json({
-        route: 'POST - /products',
-        productCreated: format(result)
-      })
-    })
-    .catch(error => {
-      res.status(500).json({
-        route: 'POST - /products',
-        error
-      })
-    })
+router.post('/', upload.single('picture'), productSchema, validatorSchema, checkAuth, async (req, res) => {
+  const { body: { name, price }, file: { path } } = req
+  const product = new ProductController({ name, picture: path, price })
+
+  try {
+    await product.create()
+    return res.status(201).json({ message: 'Product Created' })
+  } catch (error) {
+    return res.status(500).json({ message: error.message })
+  }
 })
 
-router.get('/:id', (req, res) => {
-  const { id } = req.params
-  Product.findById(id)
-    .select('_id name price')
-    .exec()
-    .then(result => {
-      if (result) {
-        res.status(200).json({
-          route: `GET - /products/${id}`,
-          product: result
-        })
-      } else {
-        res.status(404).json({
-          route: `GET - /products/${id}`,
-          message: 'I can not find your request'
-        })
-      }
-    })
-    .catch(error => {
-      res.status(500).json({
-        route: `GET - /products/${id}`,
-        error
-      })
-    })
+router.get('/:id', async (req, res) => {
+  try {
+    const product = await ProductController.findById(req.params.id)
+    if (product) {
+      return res.status(200).json({ product })
+    } else {
+      return res.status(404).json({ message: 'I can not find your resource' })
+    }
+  } catch (error) {
+    return res.status(error.code).json({ message: error.message })
+  }
 })
 
-router.patch('/:id', (req, res) => {
-  const { body, params: { id } } = req
-  Product.updateOne({ _id: id }, { $set: body })
-    .exec()
-    .then(() => {
-      res.status(200).json({
-        route: `PATCH - /products/${id}`,
-        message: 'Updated with successfully'
-      })
-    })
-    .catch(error => {
-      res.status(200).json({
-        route: `PATCH - /products/${id}`,
-        error
-      })
-    })
+router.patch('/:id', async (req, res) => {
+  try {
+    const product = new ProductController(req.body)
+    await product.update(req.params.id)
+    return res.status(200).json({ message: 'Product Updated' })
+  } catch (error) {
+    return res.status(error.code).json({ message: error.message })
+  }
 })
 
-router.delete('/:id', (req, res) => {
-  const { id } = req.params
-  Product.deleteOne({ _id: id })
-    .exec()
-    .then(() => {
-      res.status(200).json({
-        route: `DELETE - /products/${id}`,
-        message: 'Removed with successfully'
-      })
-    })
-    .catch(error => {
-      res.status(500).json({
-        route: `DELETE - /products/${id}`,
-        error
-      })
-    })
+router.delete('/:id', async (req, res) => {
+  try {
+    const result = await ProductController.delete(req.params.id)
+    if (result) return res.status(200).json({ message: 'Product Deleted' })
+    return res.status(404).json({ message: 'Resource not found' })
+  } catch (error) {
+    return res.status(error.code).json({ message: error.message })
+  }
 })
 
 export default router
