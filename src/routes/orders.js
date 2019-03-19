@@ -2,11 +2,7 @@ import { Router } from 'express'
 import validatorSchema from './../middleware/validator'
 import orderSchema from './../schemas/order'
 
-import Order from './../models/orders'
-
 import OrderController from './../controllers/Order'
-
-const NOT_FOUND_MESSAGE = 'Resource not found'
 
 const router = Router()
 
@@ -41,22 +37,13 @@ router.get('/:id', async (req, res) => {
 })
 
 router.delete('/:id', async (req, res) => {
-  const route = `DELETE - /orders/${req.params.id}`
-
-  const result = await Order.deleteOne({ _id: req.params.id })
-    .catch((error) => res.status(500).json({ route, error }))
-
-  if (result.n > 0) {
-    return res.status(200).json({
-      route,
-      message: 'Deleted with successfully'
-    })
+  try {
+    const result = await OrderController.delete(req.params.id)
+    if (result) return res.status(200).json({ message: 'Order Deleted' })
+    return res.status(404).json({ message: 'Resource not found' })
+  } catch (error) {
+    return res.status(error.code).json({ message: error.message })
   }
-
-  return res.status(404).json({
-    route,
-    message: NOT_FOUND_MESSAGE
-  })
 })
 
 export default router

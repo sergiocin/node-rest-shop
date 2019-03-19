@@ -18,6 +18,13 @@ class Order {
     return model.save().catch(error => { throw new InternalError(error.message) })
   }
 
+  static async delete (id) {
+    const result = await Model.deleteOne({ _id: id })
+      .catch(error => { throw new InternalError(error.message) })
+    if (result.n > 0) return true
+    return false
+  }
+
   static async findById (id) {
     const order = await Model.findById({ _id: id })
       .catch(error => { throw new InternalError(error.message) })
